@@ -1,21 +1,37 @@
-import { useState, useEffect } from 'react';
-import { Users, DollarSign, ShoppingCart } from 'lucide-react';
-import DashboardHeader from './components/DashboardHeader';
-import FilterBar from './components/FilterBar';
-import GridLayout from './components/GridLayout';
-import LayoutControls from './components/LayoutControls';
-import { generateMockData } from './data/mockData';
-import { DataPoint, MetricCard as MetricCardType, FilterOptions } from './types/data';
-import { LayoutItem } from './types/layout';
-import { Comment, CommentPosition } from './types/comments';
-import { loadPreferences, savePreferences, defaultPreferences } from './services/preferences';
-import { initializeComments, addComment, addReply, resolveComment, closeConnection } from './services/comments';
+import { useState, useEffect } from "react";
+import { Users, DollarSign, ShoppingCart } from "lucide-react";
+import DashboardHeader from "./components/DashboardHeader";
+import FilterBar from "./components/FilterBar";
+import GridLayout from "./components/GridLayout";
+import LayoutControls from "./components/LayoutControls";
+import { generateMockData } from "./data/mockData";
+import {
+  DataPoint,
+  MetricCard as MetricCardType,
+  FilterOptions,
+} from "./types/data";
+import { LayoutItem } from "./types/layout";
+import { Comment, CommentPosition } from "./types/comments";
+import {
+  loadPreferences,
+  savePreferences,
+  defaultPreferences,
+} from "./services/preferences";
+import {
+  initializeComments,
+  addComment,
+  addReply,
+  resolveComment,
+  closeConnection,
+} from "./services/comments";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [data, setData] = useState<DataPoint[]>([]);
   const [filteredData, setFilteredData] = useState<DataPoint[]>([]);
-  const [layouts, setLayouts] = useState<LayoutItem[]>(defaultPreferences.layouts);
+  const [layouts, setLayouts] = useState<LayoutItem[]>(
+    defaultPreferences.layouts
+  );
   const [comments, setComments] = useState<Comment[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
@@ -53,12 +69,12 @@ function App() {
   useEffect(() => {
     const filterData = () => {
       let filtered = [...data];
-      
-      if (filters.timeRange !== 'all') {
+
+      if (filters.timeRange !== "all") {
         const days = parseInt(filters.timeRange);
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - days);
-        filtered = filtered.filter(item => new Date(item.date) >= cutoffDate);
+        filtered = filtered.filter((item) => new Date(item.date) >= cutoffDate);
       }
 
       setFilteredData(filtered);
@@ -69,20 +85,29 @@ function App() {
 
   const metrics: MetricCardType[] = [
     {
-      title: 'Total Revenue',
-      value: filteredData.length > 0 ? filteredData[filteredData.length - 1].revenue : 0,
+      title: "Total Revenue",
+      value:
+        filteredData.length > 0
+          ? filteredData[filteredData.length - 1].revenue
+          : 0,
       change: 12.5,
       icon: DollarSign,
     },
     {
-      title: 'Active Users',
-      value: filteredData.length > 0 ? filteredData[filteredData.length - 1].users : 0,
+      title: "Active Users",
+      value:
+        filteredData.length > 0
+          ? filteredData[filteredData.length - 1].users
+          : 0,
       change: 8.2,
       icon: Users,
     },
     {
-      title: 'Orders',
-      value: filteredData.length > 0 ? filteredData[filteredData.length - 1].orders : 0,
+      title: "Orders",
+      value:
+        filteredData.length > 0
+          ? filteredData[filteredData.length - 1].orders
+          : 0,
       change: -3.1,
       icon: ShoppingCart,
     },
@@ -112,19 +137,28 @@ function App() {
   };
 
   const handleToggleComponent = (componentId: string) => {
-    setLayouts(layouts.map(layout => 
-      layout.id === componentId 
-        ? { ...layout, w: layout.w === 0 ? defaultPreferences.layouts.find(l => l.id === componentId)?.w || 0 : 0 }
-        : layout
-    ));
+    setLayouts(
+      layouts.map((layout) =>
+        layout.id === componentId
+          ? {
+              ...layout,
+              w:
+                layout.w === 0
+                  ? defaultPreferences.layouts.find((l) => l.id === componentId)
+                      ?.w || 0
+                  : 0,
+            }
+          : layout
+      )
+    );
   };
 
   const handleAddComment = (position: CommentPosition, text: string) => {
-    addComment(position, text, 'Current User'); // In a real app, get the current user's name
+    addComment(position, text, "Current User"); // In a real app, get the current user's name
   };
 
   const handleReplyToComment = (commentId: string, text: string) => {
-    addReply(commentId, text, 'Current User'); // In a real app, get the current user's name
+    addReply(commentId, text, "Current User"); // In a real app, get the current user's name
   };
 
   const handleResolveComment = (commentId: string) => {
@@ -132,7 +166,7 @@ function App() {
   };
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
+    <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
         <div className="max-w-7xl mx-auto">
           <DashboardHeader
@@ -140,10 +174,7 @@ function App() {
             onToggleDarkMode={() => setDarkMode(!darkMode)}
           />
 
-          <FilterBar
-            filters={filters}
-            onFilterChange={setFilters}
-          />
+          <FilterBar filters={filters} onFilterChange={setFilters} />
 
           <LayoutControls
             layouts={layouts}
