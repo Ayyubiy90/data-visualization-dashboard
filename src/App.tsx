@@ -6,6 +6,7 @@ import ChartContainer from './components/ChartContainer';
 import ScatterPlot from './components/ScatterPlot';
 import InsightPanel from './components/InsightPanel';
 import FilterBar from './components/FilterBar';
+import TreeMap from './components/TreeMap';
 import { generateMockData } from './data/mockData';
 import { DataPoint, MetricCard as MetricCardType, FilterOptions } from './types/data';
 
@@ -60,10 +61,30 @@ function App() {
     },
   ];
 
-  const scatterData = filteredData.map(item => ({
+const scatterData = filteredData.map(item => ({
     x: item.users,
     y: item.revenue / 100, // Scaled for better visualization
   }));
+
+  const treeMapData = [
+    {
+      name: 'Revenue Sources',
+      children: [
+        {
+          name: 'Product Sales',
+          size: filteredData.reduce((acc, curr) => acc + curr.revenue * 0.7, 0),
+        },
+        {
+          name: 'Services',
+          size: filteredData.reduce((acc, curr) => acc + curr.revenue * 0.2, 0),
+        },
+        {
+          name: 'Subscriptions',
+          size: filteredData.reduce((acc, curr) => acc + curr.revenue * 0.1, 0),
+        },
+      ],
+    },
+  ];
 
   return (
     <div className={darkMode ? 'dark' : ''}>
@@ -96,7 +117,7 @@ function App() {
             <InsightPanel data={filteredData} />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <ScatterPlot
               data={scatterData}
               xLabel="Users"
@@ -107,6 +128,13 @@ function App() {
               data={filteredData}
               dataKey="orders"
               title="Order Trends"
+            />
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl">
+            <TreeMap
+              data={treeMapData[0].children}
+              title="Revenue Distribution"
             />
           </div>
         </div>
