@@ -192,7 +192,7 @@ function App() {
             onToggleComponent={handleToggleComponent}
           />
 
-<div className="space-y-8">
+          <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <DataUploader
                 onDataUpload={(newData: DataPoint[]) => {
@@ -233,6 +233,7 @@ function App() {
             onAddComment={handleAddComment}
             onReplyToComment={handleReplyToComment}
             onResolveComment={handleResolveComment}
+            threshold={100} // Set your desired threshold value here
           />
 
           {!isConnected && (

@@ -1,16 +1,17 @@
-import React from "react";
-import GridLayout, { Layout } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-import { LayoutItem } from "../types/layout";
-import MetricCard from "./MetricCard";
-import ChartContainer from "./ChartContainer";
-import ScatterPlot from "./ScatterPlot";
-import TreeMap from "./TreeMap";
-import InsightPanel from "./InsightPanel";
-import CommentOverlay from "./CommentOverlay";
-import { DataPoint, MetricCard as MetricCardType } from "../types/data";
-import { Comment, CommentPosition } from "../types/comments";
+import React from 'react';
+import GridLayout, { Layout } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
+import { LayoutItem } from '../types/layout';
+import MetricCard from './MetricCard';
+import ChartContainer from './ChartContainer';
+import ScatterPlot from './ScatterPlot';
+import TreeMap from './TreeMap';
+import InsightPanel from './InsightPanel';
+import CommentOverlay from './CommentOverlay';
+import ThresholdAlert from './ThresholdAlert';
+import { DataPoint, MetricCard as MetricCardType } from '../types/data';
+import { Comment, CommentPosition } from '../types/comments';
 
 interface DashboardGridProps {
   layouts: LayoutItem[];
@@ -21,6 +22,7 @@ interface DashboardGridProps {
   onAddComment: (position: CommentPosition, text: string) => void;
   onReplyToComment: (commentId: string, text: string) => void;
   onResolveComment: (commentId: string) => void;
+  threshold: number; // Add threshold prop
 }
 
 const DashboardGrid: React.FC<DashboardGridProps> = ({
@@ -32,6 +34,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
   onAddComment,
   onReplyToComment,
   onResolveComment,
+  threshold, // Add threshold prop
 }) => {
   const renderComponent = (item: LayoutItem) => {
     const componentComments = comments.filter(
@@ -42,7 +45,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
       <div className="relative h-full">
         {(() => {
           switch (item.component) {
-            case "metrics":
+            case 'metrics':
               return (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {metrics.map((metric, index) => (
@@ -50,7 +53,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
                   ))}
                 </div>
               );
-            case "lineChart":
+            case 'lineChart':
               return (
                 <ChartContainer
                   data={data}
@@ -58,7 +61,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
                   title={item.title}
                 />
               );
-            case "scatterPlot":
+            case 'scatterPlot':
               return (
                 <ScatterPlot
                   data={data.map((d) => ({ x: d.users, y: d.revenue / 100 }))}
@@ -67,24 +70,24 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
                   title={item.title}
                 />
               );
-            case "treeMap": {
+            case 'treeMap': {
               const treeMapData = [
                 {
-                  name: "Product Sales",
+                  name: 'Product Sales',
                   size: data.reduce((acc, curr) => acc + curr.revenue * 0.7, 0),
                 },
                 {
-                  name: "Services",
+                  name: 'Services',
                   size: data.reduce((acc, curr) => acc + curr.revenue * 0.2, 0),
                 },
                 {
-                  name: "Subscriptions",
+                  name: 'Subscriptions',
                   size: data.reduce((acc, curr) => acc + curr.revenue * 0.1, 0),
                 },
               ];
               return <TreeMap data={treeMapData} title={item.title} />;
             }
-            case "insights":
+            case 'insights':
               return <InsightPanel data={data} />;
             default:
               return <div>Unknown component</div>;
@@ -97,6 +100,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
           onReplyToComment={onReplyToComment}
           onResolveComment={onResolveComment}
         />
+        <ThresholdAlert value={data[data.length - 1]?.revenue} threshold={threshold} />
       </div>
     );
 
@@ -113,7 +117,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
       onLayoutChange={(newLayout: Layout[]) =>
         onLayoutChange(
           newLayout.map((l) => ({
-            ...(layouts.find((ol) => ol.id === l.i) as LayoutItem),
+            ...layouts.find((ol) => ol.id === l.i) as LayoutItem,
             x: l.x,
             y: l.y,
             w: l.w,
@@ -123,12 +127,16 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
       }
       isDraggable
       isResizable
-      margin={[16, 16]}>
+      margin={[16, 16]}
+    >
       {layouts.map((item) => (
         <div
           key={item.id}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-colors">
-          <div className="h-full overflow-auto">{renderComponent(item)}</div>
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-colors"
+        >
+          <div className="h-full overflow-auto">
+            {renderComponent(item)}
+          </div>
         </div>
       ))}
     </GridLayout>
