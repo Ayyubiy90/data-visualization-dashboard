@@ -1,11 +1,11 @@
 import React, { useState, useRef, memo } from 'react';
 import { Upload, AlertCircle } from 'lucide-react';
 import { DataPoint } from '../types/data';
-import { RawDataRow } from '../types/upload';
+import { RawDataRow } from '../types/upload'; // Import RawDataRow
 
 interface DataUploaderProps {
   onDataUpload: (data: DataPoint[]) => void;
-  onError: (error: string) => void; // Keep this as is
+  onError: (error: string) => void;
 }
 
 interface ValidationError {
@@ -20,7 +20,7 @@ const DataUploader: React.FC<DataUploaderProps> = memo(({ onDataUpload, onError 
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validateData = (data: any[]): ValidationError[] => {
+  const validateData = (data: RawDataRow[]): ValidationError[] => {
     const errors: ValidationError[] = [];
     
     data.forEach((row, index) => {
@@ -46,7 +46,7 @@ const DataUploader: React.FC<DataUploaderProps> = memo(({ onDataUpload, onError 
     return errors;
   };
 
-  const cleanData = (data: any[]): DataPoint[] => {
+  const cleanData = (data: RawDataRow[]): DataPoint[] => {
     return data.map(row => ({
       date: new Date(row.date).toISOString().split('T')[0],
       revenue: Number(row.revenue),
@@ -61,7 +61,7 @@ const DataUploader: React.FC<DataUploaderProps> = memo(({ onDataUpload, onError 
 
     try {
       const text = await file.text();
-      let data: any[];
+      let data: RawDataRow[];
 
       if (file.name.endsWith('.csv')) {
         // Process CSV
@@ -72,7 +72,7 @@ const DataUploader: React.FC<DataUploaderProps> = memo(({ onDataUpload, onError 
           return headers.reduce((obj, header, i) => {
             obj[header] = values[i]?.trim();
             return obj;
-          }, {} as any);
+          }, {} as RawDataRow);
         });
       } else if (file.name.endsWith('.json')) {
         // Process JSON
