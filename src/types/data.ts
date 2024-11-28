@@ -18,8 +18,9 @@ export interface ChartData {
 }
 
 export type TimeRange = '7d' | '30d' | '90d' | 'all';
+export type MetricType = 'revenue' | 'users' | 'orders';
 
 export interface FilterOptions {
   timeRange: TimeRange;
-  dataType: 'revenue' | 'users' | 'orders';
+  dataType: MetricType;
 }

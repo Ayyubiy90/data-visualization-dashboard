@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Users, DollarSign, ShoppingCart } from 'lucide-react';
 import DashboardHeader from './components/DashboardHeader';
-import MetricCard from './components/MetricCard';
-import ChartContainer from './components/ChartContainer';
-import ScatterPlot from './components/ScatterPlot';
-import InsightPanel from './components/InsightPanel';
 import FilterBar from './components/FilterBar';
-import TreeMap from './components/TreeMap';
+import GridLayout from './components/GridLayout';
+import LayoutControls from './components/LayoutControls';
 import { generateMockData } from './data/mockData';
-import { DataPoint, MetricCard as MetricCardType, FilterOptions } from './types/data';
+import { DataPoint, MetricCard as MetricCardType, FilterOptions, TimeRange, MetricType } from './types/data';
+import { LayoutItem } from './types/layout';
+import { loadPreferences, savePreferences, defaultPreferences } from './services/preferences';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [data, setData] = useState<DataPoint[]>([]);
   const [filteredData, setFilteredData] = useState<DataPoint[]>([]);
+  const [layouts, setLayouts] = useState<LayoutItem[]>(defaultPreferences.layouts);
   const [filters, setFilters] = useState<FilterOptions>({
-    timeRange: '30d',
-    dataType: 'revenue',
+    timeRange: defaultPreferences.defaultTimeRange,
+    dataType: defaultPreferences.defaultMetric,
   });
+
+  // Load saved preferences
+  useEffect(() => {
+    const preferences = loadPreferences();
+    setDarkMode(preferences.darkMode);
+    setLayouts(preferences.layouts);
+    setFilters({
+      timeRange: preferences.defaultTimeRange,
+      dataType: preferences.defaultMetric,
+    });
+  }, []);
 
   useEffect(() => {
     setData(generateMockData());
@@ -61,30 +72,36 @@ function App() {
     },
   ];
 
-const scatterData = filteredData.map(item => ({
-    x: item.users,
-    y: item.revenue / 100, // Scaled for better visualization
-  }));
+  const handleLayoutChange = (newLayouts: LayoutItem[]) => {
+    setLayouts(newLayouts);
+  };
 
-  const treeMapData = [
-    {
-      name: 'Revenue Sources',
-      children: [
-        {
-          name: 'Product Sales',
-          size: filteredData.reduce((acc, curr) => acc + curr.revenue * 0.7, 0),
-        },
-        {
-          name: 'Services',
-          size: filteredData.reduce((acc, curr) => acc + curr.revenue * 0.2, 0),
-        },
-        {
-          name: 'Subscriptions',
-          size: filteredData.reduce((acc, curr) => acc + curr.revenue * 0.1, 0),
-        },
-      ],
-    },
-  ];
+  const handleSaveLayout = () => {
+    savePreferences({
+      layouts,
+      darkMode,
+      defaultTimeRange: filters.timeRange,
+      defaultMetric: filters.dataType,
+    });
+  };
+
+  const handleResetLayout = () => {
+    const preferences = defaultPreferences;
+    setLayouts(preferences.layouts);
+    setDarkMode(preferences.darkMode);
+    setFilters({
+      timeRange: preferences.defaultTimeRange,
+      dataType: preferences.defaultMetric,
+    });
+  };
+
+  const handleToggleComponent = (componentId: string) => {
+    setLayouts(layouts.map(layout => 
+      layout.id === componentId 
+        ? { ...layout, w: layout.w === 0 ? defaultPreferences.layouts.find(l => l.id === componentId)?.w || 0 : 0 }
+        : layout
+    ));
+  };
 
   return (
     <div className={darkMode ? 'dark' : ''}>
@@ -100,43 +117,19 @@ const scatterData = filteredData.map(item => ({
             onFilterChange={setFilters}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {metrics.map((metric, index) => (
-              <MetricCard key={index} {...metric} />
-            ))}
-          </div>
+          <LayoutControls
+            layouts={layouts}
+            onSaveLayout={handleSaveLayout}
+            onResetLayout={handleResetLayout}
+            onToggleComponent={handleToggleComponent}
+          />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
-              <ChartContainer
-                data={filteredData}
-                dataKey={filters.dataType}
-                title={`${filters.dataType.charAt(0).toUpperCase() + filters.dataType.slice(1)} Over Time`}
-              />
-            </div>
-            <InsightPanel data={filteredData} />
-          </div>
-
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ScatterPlot
-              data={scatterData}
-              xLabel="Users"
-              yLabel="Revenue (hundreds)"
-              title="Revenue vs Users Correlation"
-            />
-            <ChartContainer
-              data={filteredData}
-              dataKey="orders"
-              title="Order Trends"
-            />
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-xl">
-            <TreeMap
-              data={treeMapData[0].children}
-              title="Revenue Distribution"
-            />
-          </div>
+          <GridLayout
+            layouts={layouts}
+            onLayoutChange={handleLayoutChange}
+            data={filteredData}
+            metrics={metrics}
+          />
         </div>
       </div>
     </div>
