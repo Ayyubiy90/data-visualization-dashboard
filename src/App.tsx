@@ -8,6 +8,7 @@ import DataUploader from "./components/DataUploader";
 import DataCleaner from "./components/DataCleaner";
 import FeedbackForm from "./components/FeedbackForm";
 import ScheduleSettings from "./components/ScheduleSettings";
+import AchievementBadge from "./components/AchievementBadge";
 import { generateMockData } from "./data/mockData";
 import {
   DataPoint,
@@ -230,6 +231,11 @@ function App() {
             />
 
             <FeedbackForm onSubmit={handleFeedbackSubmit} />
+            <AchievementBadge
+              title="First Upload"
+              description="You uploaded your first dataset!"
+              isAchieved={data.length > 0}
+            />
           </div>
 
           <GridLayout
