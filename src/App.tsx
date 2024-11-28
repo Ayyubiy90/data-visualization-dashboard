@@ -6,6 +6,7 @@ import GridLayout from "./components/GridLayout";
 import LayoutControls from "./components/LayoutControls";
 import DataUploader from "./components/DataUploader";
 import DataCleaner from "./components/DataCleaner";
+import ScheduleSettings from "./components/ScheduleSettings";
 import { generateMockData } from "./data/mockData";
 import {
   DataPoint,
@@ -191,7 +192,7 @@ function App() {
             onToggleComponent={handleToggleComponent}
           />
 
-          <div className="mb-8">
+<div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <DataUploader
                 onDataUpload={(newData: DataPoint[]) => {
@@ -208,6 +209,19 @@ function App() {
                 }}
               />
             </div>
+
+            <ScheduleSettings
+              onUpdate={async () => {
+                try {
+                  const newData = generateMockData();
+                  setData(newData);
+                  handleStatusMessage("Data updated successfully");
+                } catch (error) {
+                  handleStatusMessage("Failed to update data");
+                  throw error;
+                }
+              }}
+            />
           </div>
 
           <GridLayout
