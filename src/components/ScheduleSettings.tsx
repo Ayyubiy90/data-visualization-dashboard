@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Clock, RefreshCw } from "lucide-react";
 import {
   UpdateInterval,
   ScheduleConfig,
@@ -7,23 +7,23 @@ import {
   saveScheduleConfig,
   startScheduledUpdates,
   stopScheduledUpdates,
-} from '../services/scheduler';
+} from "../services/scheduler";
 
 interface ScheduleSettingsProps {
   onUpdate: () => Promise<void>;
 }
 
 const intervals: { value: UpdateInterval; label: string }[] = [
-  { value: '1min', label: 'Every minute' },
-  { value: '5min', label: 'Every 5 minutes' },
-  { value: '15min', label: 'Every 15 minutes' },
-  { value: '30min', label: 'Every 30 minutes' },
-  { value: '1hour', label: 'Every hour' },
+  { value: "1min", label: "Every minute" },
+  { value: "5min", label: "Every 5 minutes" },
+  { value: "15min", label: "Every 15 minutes" },
+  { value: "30min", label: "Every 30 minutes" },
+  { value: "1hour", label: "Every hour" },
 ];
 
 const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
   const [config, setConfig] = useState<ScheduleConfig>(loadScheduleConfig());
-  const [nextUpdate, setNextUpdate] = useState<string>('');
+  const [nextUpdate, setNextUpdate] = useState<string>("");
 
   useEffect(() => {
     if (config.enabled) {
@@ -45,17 +45,17 @@ const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
 
   const updateNextUpdateTime = () => {
     if (!config.enabled) {
-      setNextUpdate('');
+      setNextUpdate("");
       return;
     }
 
     const lastUpdate = new Date(config.lastUpdate);
     const intervals: Record<UpdateInterval, number> = {
-      '1min': 60 * 1000,
-      '5min': 5 * 60 * 1000,
-      '15min': 15 * 60 * 1000,
-      '30min': 30 * 60 * 1000,
-      '1hour': 60 * 60 * 1000,
+      "1min": 60 * 1000,
+      "5min": 5 * 60 * 1000,
+      "15min": 15 * 60 * 1000,
+      "30min": 30 * 60 * 1000,
+      "1hour": 60 * 60 * 1000,
     };
 
     const nextUpdateTime = new Date(
@@ -65,12 +65,12 @@ const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
     const diff = nextUpdateTime.getTime() - now.getTime();
 
     if (diff <= 0) {
-      setNextUpdate('Updating...');
+      setNextUpdate("Updating...");
     } else {
       const minutes = Math.floor(diff / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
       setNextUpdate(
-        `Next update in ${minutes}:${seconds.toString().padStart(2, '0')}`
+        `Next update in ${minutes}:${seconds.toString().padStart(2, "0")}`
       );
     }
   };
@@ -105,7 +105,7 @@ const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
       setConfig(newConfig);
       saveScheduleConfig(newConfig);
     } catch (error) {
-      console.error('Manual update failed:', error);
+      console.error("Manual update failed:", error);
     }
   };
 
@@ -121,8 +121,7 @@ const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
         <button
           onClick={handleManualUpdate}
           className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg 
-                   hover:bg-blue-600 transition-colors"
-        >
+                   hover:bg-blue-600 transition-colors">
           <RefreshCw size={16} />
           Update Now
         </button>
@@ -158,8 +157,7 @@ const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
             disabled={!config.enabled}
             className="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 
                      text-gray-900 dark:text-white rounded-lg p-2 focus:ring-blue-500 
-                     focus:border-blue-500 disabled:opacity-50"
-          >
+                     focus:border-blue-500 disabled:opacity-50">
             {intervals.map((interval) => (
               <option key={interval.value} value={interval.value}>
                 {interval.label}
@@ -169,8 +167,7 @@ const ScheduleSettings: React.FC<ScheduleSettingsProps> = ({ onUpdate }) => {
         </div>
 
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Last update:{' '}
-          {new Date(config.lastUpdate).toLocaleString()}
+          Last update: {new Date(config.lastUpdate).toLocaleString()}
         </div>
       </div>
     </div>
