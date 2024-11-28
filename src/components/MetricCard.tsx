@@ -2,11 +2,15 @@ import React from 'react';
 import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { MetricCard as MetricCardType } from '../types/data';
 
-const MetricCard: React.FC<MetricCardType> = ({ title, value, change, icon: Icon }) => {
+interface MetricCardProps extends MetricCardType {
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon: Icon }) => {
   const isPositive = change >= 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl w-full max-w-xs mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Icon className="w-5 h-5 text-blue-500" />
