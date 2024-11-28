@@ -47,10 +47,12 @@ const DashboardGrid: React.FC<DashboardGridProps> = React.memo(({
           switch (item.component) {
             case 'metrics':
               return (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {metrics.map((metric, index) => (
-                    <MetricCard key={index} {...metric} />
-                  ))}
+                <div className="flex flex-col items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {metrics.map((metric, index) => (
+                      <MetricCard key={index} {...metric} />
+                    ))}
+                  </div>
                 </div>
               );
             case 'lineChart':
