@@ -21,7 +21,9 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
         User Feedback
       </h3>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="feedback" className="sr-only">Feedback</label>
         <textarea
+          id="feedback"
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
           placeholder="Share your feedback or report an issue..."
