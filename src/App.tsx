@@ -186,7 +186,7 @@ function App() {
     try {
       await exportDataToCloud(data);
       handleStatusMessage("Data exported successfully!");
-    } catch (error) {
+    } catch {
       handleStatusMessage("Failed to export data.");
     }
   };
@@ -216,7 +216,7 @@ function App() {
                   setData(newData);
                   handleStatusMessage("Data uploaded successfully");
                 }}
-    onError={handleStatusMessage}
+                onError={handleStatusMessage}
               />
               <DataCleaner
                 data={data}
@@ -233,9 +233,8 @@ function App() {
                   const newData = generateMockData();
                   setData(newData);
                   handleStatusMessage("Data updated successfully");
-                } catch (error) {
+                } catch {
                   handleStatusMessage("Failed to update data");
-                  throw error;
                 }
               }}
             />
