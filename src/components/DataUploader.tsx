@@ -1,10 +1,11 @@
-import React, { useState, useRef } from "react";
-import { Upload, X, Check, AlertCircle } from "lucide-react";
-import { DataPoint } from "../types/data";
+import React, { useState, useRef, memo } from 'react';
+import { Upload, AlertCircle } from 'lucide-react';
+import { DataPoint } from '../types/data';
+import { RawDataRow } from '../types/upload';
 
 interface DataUploaderProps {
   onDataUpload: (data: DataPoint[]) => void;
-  onError: (error: string) => void;
+  onError: (error: string) => void; // Keep this as is
 }
 
 interface ValidationError {
@@ -13,31 +14,26 @@ interface ValidationError {
   message: string;
 }
 
-const DataUploader: React.FC<DataUploaderProps> = ({
-  onDataUpload,
-  onError,
-}) => {
+const DataUploader: React.FC<DataUploaderProps> = memo(({ onDataUpload, onError }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
-    []
-  );
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateData = (data: any[]): ValidationError[] => {
     const errors: ValidationError[] = [];
-
+    
     data.forEach((row, index) => {
       if (!row.date || isNaN(new Date(row.date).getTime())) {
         errors.push({
           row: index + 1,
-          field: "date",
-          message: "Invalid date format",
+          field: 'date',
+          message: 'Invalid date format',
         });
       }
-
-      ["revenue", "users", "orders"].forEach((field) => {
-        if (typeof row[field] !== "number" || isNaN(row[field])) {
+      
+      ['revenue', 'users', 'orders'].forEach(field => {
+        if (typeof row[field] !== 'number' || isNaN(row[field])) {
           errors.push({
             row: index + 1,
             field,
@@ -51,8 +47,8 @@ const DataUploader: React.FC<DataUploaderProps> = ({
   };
 
   const cleanData = (data: any[]): DataPoint[] => {
-    return data.map((row) => ({
-      date: new Date(row.date).toISOString().split("T")[0],
+    return data.map(row => ({
+      date: new Date(row.date).toISOString().split('T')[0],
       revenue: Number(row.revenue),
       users: Math.floor(Number(row.users)),
       orders: Math.floor(Number(row.orders)),
@@ -67,22 +63,22 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       const text = await file.text();
       let data: any[];
 
-      if (file.name.endsWith(".csv")) {
+      if (file.name.endsWith('.csv')) {
         // Process CSV
-        const rows = text.split("\n");
-        const headers = rows[0].split(",").map((h) => h.trim());
-        data = rows.slice(1).map((row) => {
-          const values = row.split(",");
+        const rows = text.split('\n');
+        const headers = rows[0].split(',').map(h => h.trim());
+        data = rows.slice(1).map(row => {
+          const values = row.split(',');
           return headers.reduce((obj, header, i) => {
             obj[header] = values[i]?.trim();
             return obj;
           }, {} as any);
         });
-      } else if (file.name.endsWith(".json")) {
+      } else if (file.name.endsWith('.json')) {
         // Process JSON
         data = JSON.parse(text);
       } else {
-        throw new Error("Unsupported file format");
+        throw new Error('Unsupported file format');
       }
 
       const errors = validateData(data);
@@ -94,9 +90,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       const cleanedData = cleanData(data);
       onDataUpload(cleanedData);
     } catch (error) {
-      onError(
-        error instanceof Error ? error.message : "Failed to process file"
-      );
+      onError(error instanceof Error ? error.message : 'Failed to process file');
     } finally {
       setIsProcessing(false);
     }
@@ -137,14 +131,11 @@ const DataUploader: React.FC<DataUploaderProps> = ({
 
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors
-          ${
-            isDragging
-              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-              : "border-gray-300 dark:border-gray-600"
-          }`}
+          ${isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onDrop={handleDrop}>
+        onDrop={handleDrop}
+      >
         <input
           type="file"
           ref={fileInputRef}
@@ -153,29 +144,19 @@ const DataUploader: React.FC<DataUploaderProps> = ({
           onChange={handleFileSelect}
         />
 
-        <Upload
-          className={`mx-auto h-12 w-12 mb-4 ${
-            isDragging ? "text-blue-500" : "text-gray-400"
-          }`}
-        />
+        <Upload className={`mx-auto h-12 w-12 mb-4 ${isDragging ? 'text-blue-500' : 'text-gray-400'}`} />
 
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-          Drag and drop your CSV or JSON file here, or{" "}
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="text-blue-500 hover:text-blue-600">
+          Drag and drop your CSV or JSON file here, or{' '}
+          <button onClick={() => fileInputRef.current?.click()} className="text-blue-500 hover:text-blue-600">
             browse
           </button>
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          Supported formats: CSV, JSON
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Supported formats: CSV, JSON</p>
       </div>
 
       {isProcessing && (
-        <div className="mt-4 text-center text-gray-600 dark:text-gray-300">
-          Processing file...
-        </div>
+        <div className="mt-4 text-center text-gray-600 dark:text-gray-300">Processing file...</div>
       )}
 
       {validationErrors.length > 0 && (
@@ -195,6 +176,6 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       )}
     </div>
   );
-};
+});
 
 export default DataUploader;

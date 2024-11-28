@@ -52,7 +52,9 @@ const connectWebSocket = () => {
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+        console.error('WebSocket error:', error);
+        onConnectionChange(false); // Notify connection status change
+        console.error('WebSocket error:', event);
     };
   } catch (error) {
     console.error('Error connecting to WebSocket:', error);

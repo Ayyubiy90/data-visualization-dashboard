@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Settings, RefreshCw } from "lucide-react";
 import { DataPoint } from "../types/data";
 
@@ -14,7 +14,7 @@ interface CleaningOptions {
   normalizeValues: boolean;
 }
 
-const DataCleaner: React.FC<DataCleanerProps> = ({ data, onDataClean }) => {
+const DataCleaner: React.FC<DataCleanerProps> = memo(({ data, onDataClean }) => {
   const [options, setOptions] = useState<CleaningOptions>({
     removeOutliers: true,
     interpolateMissing: true,
@@ -177,6 +177,6 @@ const DataCleaner: React.FC<DataCleanerProps> = ({ data, onDataClean }) => {
       </div>
     </div>
   );
-};
+});
 
 export default DataCleaner;

@@ -216,7 +216,7 @@ function App() {
                   setData(newData);
                   handleStatusMessage("Data uploaded successfully");
                 }}
-                onError={(error: string) => handleStatusMessage(error)}
+    onError={handleStatusMessage}
               />
               <DataCleaner
                 data={data}
