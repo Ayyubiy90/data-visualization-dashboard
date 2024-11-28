@@ -4,6 +4,8 @@ import DashboardHeader from "./components/DashboardHeader";
 import FilterBar from "./components/FilterBar";
 import GridLayout from "./components/GridLayout";
 import LayoutControls from "./components/LayoutControls";
+import DataUploader from "./components/DataUploader";
+import DataCleaner from "./components/DataCleaner";
 import { generateMockData } from "./data/mockData";
 import {
   DataPoint,
@@ -34,6 +36,7 @@ function App() {
   );
   const [comments, setComments] = useState<Comment[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterOptions>({
     timeRange: defaultPreferences.defaultTimeRange,
     dataType: defaultPreferences.defaultMetric,
@@ -154,15 +157,20 @@ function App() {
   };
 
   const handleAddComment = (position: CommentPosition, text: string) => {
-    addComment(position, text, "Current User"); // In a real app, get the current user's name
+    addComment(position, text, "Current User");
   };
 
   const handleReplyToComment = (commentId: string, text: string) => {
-    addReply(commentId, text, "Current User"); // In a real app, get the current user's name
+    addReply(commentId, text, "Current User");
   };
 
   const handleResolveComment = (commentId: string) => {
     resolveComment(commentId);
+  };
+
+  const handleStatusMessage = (message: string) => {
+    setStatusMessage(message);
+    setTimeout(() => setStatusMessage(null), 3000);
   };
 
   return (
@@ -183,6 +191,25 @@ function App() {
             onToggleComponent={handleToggleComponent}
           />
 
+          <div className="mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <DataUploader
+                onDataUpload={(newData: DataPoint[]) => {
+                  setData(newData);
+                  handleStatusMessage("Data uploaded successfully");
+                }}
+                onError={(error: string) => handleStatusMessage(error)}
+              />
+              <DataCleaner
+                data={data}
+                onDataClean={(cleanedData: DataPoint[]) => {
+                  setData(cleanedData);
+                  handleStatusMessage("Data cleaned successfully");
+                }}
+              />
+            </div>
+          </div>
+
           <GridLayout
             layouts={layouts}
             onLayoutChange={handleLayoutChange}
@@ -197,6 +224,12 @@ function App() {
           {!isConnected && (
             <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg">
               Reconnecting to comments service...
+            </div>
+          )}
+
+          {statusMessage && (
+            <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg">
+              {statusMessage}
             </div>
           )}
         </div>
