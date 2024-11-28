@@ -6,6 +6,7 @@ import GridLayout from "./components/GridLayout";
 import LayoutControls from "./components/LayoutControls";
 import DataUploader from "./components/DataUploader";
 import DataCleaner from "./components/DataCleaner";
+import FeedbackForm from "./components/FeedbackForm";
 import ScheduleSettings from "./components/ScheduleSettings";
 import { generateMockData } from "./data/mockData";
 import {
@@ -174,6 +175,11 @@ function App() {
     setTimeout(() => setStatusMessage(null), 3000);
   };
 
+  const handleFeedbackSubmit = (feedback: string) => {
+    console.log("User feedback submitted:", feedback);
+    handleStatusMessage("Thank you for your feedback!");
+  };
+
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
@@ -222,6 +228,8 @@ function App() {
                 }
               }}
             />
+
+            <FeedbackForm onSubmit={handleFeedbackSubmit} />
           </div>
 
           <GridLayout
