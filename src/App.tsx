@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, DollarSign, ShoppingCart } from 'lucide-react';
 import DashboardHeader from './components/DashboardHeader';
 import FilterBar from './components/FilterBar';
 import GridLayout from './components/GridLayout';
 import LayoutControls from './components/LayoutControls';
 import { generateMockData } from './data/mockData';
-import { DataPoint, MetricCard as MetricCardType, FilterOptions, TimeRange, MetricType } from './types/data';
+import { DataPoint, MetricCard as MetricCardType, FilterOptions } from './types/data';
 import { LayoutItem } from './types/layout';
 import { loadPreferences, savePreferences, defaultPreferences } from './services/preferences';
 
