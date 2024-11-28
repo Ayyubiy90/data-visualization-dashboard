@@ -7,17 +7,33 @@ import LayoutControls from './components/LayoutControls';
 import { generateMockData } from './data/mockData';
 import { DataPoint, MetricCard as MetricCardType, FilterOptions } from './types/data';
 import { LayoutItem } from './types/layout';
+import { Comment, CommentPosition } from './types/comments';
 import { loadPreferences, savePreferences, defaultPreferences } from './services/preferences';
+import { initializeComments, addComment, addReply, resolveComment, closeConnection } from './services/comments';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [data, setData] = useState<DataPoint[]>([]);
   const [filteredData, setFilteredData] = useState<DataPoint[]>([]);
   const [layouts, setLayouts] = useState<LayoutItem[]>(defaultPreferences.layouts);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     timeRange: defaultPreferences.defaultTimeRange,
     dataType: defaultPreferences.defaultMetric,
   });
+
+  // Initialize WebSocket connection for comments
+  useEffect(() => {
+    initializeComments(
+      (updatedComments: Comment[]) => setComments(updatedComments),
+      (connected: boolean) => setIsConnected(connected)
+    );
+
+    return () => {
+      closeConnection();
+    };
+  }, []);
 
   // Load saved preferences
   useEffect(() => {
@@ -103,6 +119,18 @@ function App() {
     ));
   };
 
+  const handleAddComment = (position: CommentPosition, text: string) => {
+    addComment(position, text, 'Current User'); // In a real app, get the current user's name
+  };
+
+  const handleReplyToComment = (commentId: string, text: string) => {
+    addReply(commentId, text, 'Current User'); // In a real app, get the current user's name
+  };
+
+  const handleResolveComment = (commentId: string) => {
+    resolveComment(commentId);
+  };
+
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
@@ -129,7 +157,17 @@ function App() {
             onLayoutChange={handleLayoutChange}
             data={filteredData}
             metrics={metrics}
+            comments={comments}
+            onAddComment={handleAddComment}
+            onReplyToComment={handleReplyToComment}
+            onResolveComment={handleResolveComment}
           />
+
+          {!isConnected && (
+            <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg">
+              Reconnecting to comments service...
+            </div>
+          )}
         </div>
       </div>
     </div>
