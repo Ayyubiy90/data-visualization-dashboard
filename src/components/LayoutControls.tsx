@@ -23,13 +23,13 @@ const LayoutControls: React.FC<LayoutControlsProps> = ({
         <div className="space-x-2">
           <button
             onClick={onSaveLayout}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mt-2 mb-2"
           >
             Save Layout
           </button>
           <button
             onClick={onResetLayout}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors mt-2 mb-2"
           >
             Reset Layout
           </button>
