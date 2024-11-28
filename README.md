@@ -28,6 +28,11 @@ A modern, interactive dashboard built with React, TypeScript, and Recharts for a
 - ✅ Trend visualization
 - ✅ Performance alerts
 
+### 📱 Mobile Responsiveness
+- ✅ Layout customization is responsive
+- ✅ Cards and buttons adjust for mobile view
+- ✅ Improved visibility and spacing on smaller screens
+
 ## Tech Stack
 
 - **React** - UI framework
