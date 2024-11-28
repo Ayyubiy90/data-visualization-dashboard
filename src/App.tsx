@@ -10,6 +10,7 @@ import FeedbackForm from "./components/FeedbackForm";
 import ScheduleSettings from "./components/ScheduleSettings";
 import AchievementBadge from "./components/AchievementBadge";
 import { generateMockData } from "./data/mockData";
+import { exportDataToCloud } from "./services/export";
 import {
   DataPoint,
   MetricCard as MetricCardType,
@@ -181,6 +182,15 @@ function App() {
     handleStatusMessage("Thank you for your feedback!");
   };
 
+  const handleExportData = async () => {
+    try {
+      await exportDataToCloud(data);
+      handleStatusMessage("Data exported successfully!");
+    } catch (error) {
+      handleStatusMessage("Failed to export data.");
+    }
+  };
+
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
@@ -237,6 +247,13 @@ function App() {
               isAchieved={data.length > 0}
             />
           </div>
+
+          <button
+            onClick={handleExportData}
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg 
+                     hover:bg-green-600 transition-colors">
+            Export Data to Cloud
+          </button>
 
           <GridLayout
             layouts={layouts}
